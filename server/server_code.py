@@ -43,8 +43,23 @@ def run_server():
                         response = 'HTTP/1.1 200 OK\n\nData has been added!'
                     else:
                         response = 'HTTP/1.1 400 Bad Request\n\nName already exists in the database!'
+                elif text == 'all':
+                    query = f"SELECT name FROM data"
+                    result = cursor.execute(query).fetchall()
+                    response = 'HTTP/1.1 200 OK\n\n'
+                    if result:
+                        for row in result:
+                            response += row[0] + '\n'
+                    else:
+                        response += 'No data found!\n'
+
                 else:
-                    response = 'HTTP/1.1 400 Bad Request\n\nInvalid data format!'
+                    query_check = f"SELECT text FROM data WHERE name = '{text}'"
+                    result = cursor.execute(query_check).fetchone()
+                    if result is not None:
+                        response = f'HTTP/1.1 200 OK\n\n{result[0]}'
+                    else:
+                        response = 'HTTP/1.1 400 Bad Request\n\nName does not exist in the database!'
             else:
                 response = 'HTTP/1.1 400 Bad Request\n\nEmpty line separating headers and body is missing!'
 
